@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thành viên 2 · Media Lab</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main>
+    <p class="eyebrow">NHÓM 3 / WEBRTC CORE & MEDIA</p>
+    <h1>Kiểm tra camera, micro và màn hình</h1>
+    <p>Bản kiểm tra local. Chưa có kết nối phòng họp hoặc video từ người khác.</p>
+    <div class="controls">
+      <button id="start">Mở camera & micro</button>
+      <button id="mic" disabled>Tắt micro</button>
+      <button id="camera" disabled>Tắt camera</button>
+      <button id="share" disabled>Chia sẻ màn hình</button>
+      <button id="stopShare" disabled>Dừng chia sẻ</button>
+      <button id="leave" disabled>Giải phóng thiết bị</button>
+    </div>
+    <section class="grid">
+      <figure><video id="local" autoplay muted playsinline></video><figcaption>Camera local · âm thanh preview được tắt để tránh vọng</figcaption></figure>
+      <figure><video id="screen" autoplay muted playsinline></video><figcaption>Màn hình local · chưa truyền tới peer</figcaption></figure>
+    </section>
+    <p>Hãy cho phép camera/micro khi trình duyệt hỏi. Chia sẻ màn hình chỉ lấy hình ảnh; âm thanh hệ thống chưa được triển khai.</p>
+    <pre id="status" role="status" aria-live="polite">Sẵn sàng.</pre>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

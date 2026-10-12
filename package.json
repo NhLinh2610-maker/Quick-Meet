@@ -1,0 +1,12 @@
+{
+  "name": "webrtc-member2",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bộ khung WebRTC Core & Media dành cho thành viên 2",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

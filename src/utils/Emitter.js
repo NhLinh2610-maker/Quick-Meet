@@ -1,0 +1,13 @@
+export class Emitter {
+  #listeners = new Map();
+  on(name, listener) {
+    const listeners = this.#listeners.get(name) ?? new Set();
+    listeners.add(listener);
+    this.#listeners.set(name, listeners);
+    return () => listeners.delete(listener);
+  }
+  emit(name, payload) {
+    for (const listener of this.#listeners.get(name) ?? []) listener(payload);
+  }
+  clear() { this.#listeners.clear(); }
+}
