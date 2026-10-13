@@ -16,13 +16,28 @@ Thành viên 3: UI, video grid, thanh điều khiển, chat/presence và recordi
 PDF có 5 trang. Phần mở đầu nói tới bộ câu hỏi phản biện, nhưng bản đính kèm
 kết thúc ở bảng phân công và không chứa bộ câu hỏi đó.
 
-## Những quyết định tài liệu chưa chốt
+## Quyết định cập nhật với người dùng
 
-- JavaScript thuần hay React cho UI.
-- Event names, ACK, cách định danh peer, ai bắt đầu Offer.
-- Room capacity, trạng thái reconnect và quy tắc join lặp.
+Phạm vi gốc trong tài liệu là 3-5 người; người dùng chọn mục tiêu tối đa 7 người/phòng.
+Với 7 người mỗi máy có 6 kết nối, toàn phòng có 21 cặp; cần kiểm thử tải thực tế.
+Đã thống nhất đề xuất signaling v0.3: tạo/join riêng, mã 6 ký tự, tên được trùng,
+quyền ngang nhau, mỗi tab một phòng, phòng trống bị xóa và tham gia lại thủ công khi mất kết nối.
+Phát triển bằng localhost, sau mốc gọi hai người triển khai bản thử HTTPS trên cloud miễn phí.
+Chi tiết ở SIGNALING.md; đây là thiết kế đã thống nhất với người dùng,
+còn cần thành viên 1 thật xác nhận, chưa có backend để tích hợp.
+UI dùng React + Vite, cấu trúc mục tiêu src/core/, components/, pages/, hooks/.
+Có bước preview/chỉnh mic/camera trước tham gia trực tiếp, cho phép thiếu thiết bị hoặc chỉ nghe/xem.
+Mỗi phòng một người share do server quản lý; gửi camera và screen riêng, có tiếng tab cùng micro
+nếu capture hỗ trợ. Chat văn bản không lịch sử server; recording làm sau khi gọi/share/chat ổn định.
+Chi tiết ở UI-CONTRACT.md; cần thành viên 3 thật xác nhận, chưa triển khai UI mới.
+
+## Những quyết định còn cần chốt
+
+- Thành viên 1/3 xác nhận hợp đồng v0.3, chốt event/payload presence, share và chat.
+- Timeout ACK leave và phản hồi signaling lỗi.
+- Nhà cung cấp hosting miễn phí và cách đóng gói frontend/backend.
 - STUN/TURN triển khai ở đâu và ai quản trị Coturn.
-- Chia sẻ chỉ video hay cả âm thanh hệ thống.
+- Ánh xạ camera/screen/audio tab, truyền hoặc mix audio và điều phối quyền share/capture.
 - Recording ghi local hay toàn bộ cuộc họp: thành viên 3 cần xác định.
 
 Bộ khung chọn JS ES Modules để dễ ghép; protocol trong SIGNALING là đề xuất.
@@ -48,6 +63,7 @@ Socket.IO là thư viện vận chuyển signaling, không phải SDK hội ngh�
 | 3 | 2 | 3 |
 | 4 | 3 | 6 |
 | 5 | 4 | 10 |
+| 7 | 6 | 21 |
 
 Signaling server không nằm trên đường media thông thường.
 Nếu ICE chọn relay, media đi qua TURN; khi đó không còn đường truyền trực tiếp.
@@ -56,7 +72,8 @@ Mesh phù hợp phạm vi nhỏ của đề tài; tăng người sẽ tăng uplo
 
 ## Luồng phiên dự kiến
 
-Người dùng bấm tham gia → xin camera/micro → server xác nhận phòng và danh sách peer
+Người dùng mở bước chuẩn bị → xin các thiết bị khả dụng, chỉnh mic/camera → xác nhận tạo/join
+→ server xác nhận phòng và danh sách peer/trạng thái hiện tại
 → tạo một PeerConnection mỗi người → addTrack → trao đổi SDP/ICE
 → nhận ontrack → UI gắn stream vào video element.
 Khi rời, đóng peer, stop capture và gỡ listener.
@@ -69,11 +86,10 @@ Khi rời, đóng peer, stop capture và gỡ listener.
   Candidates của Offer bị bỏ qua cũng cần xử lý nhất quán.
 - Không đồng nhất signalingState, iceConnectionState và connectionState.
   disconnected có thể tạm thời; failed mới cần chính sách recovery.
-- Screen sharing thay video sender trên mỗi peer; mic vẫn dùng audio track cũ.
-  Track mới cần phù hợp envelope đã thương lượng; replaceTrack có thể lỗi
-  nếu việc thay track cần thương lượng lại.
-- Khôi phục camera khi người dùng bấm Stop sharing của browser.
-  Người mới vào trong lúc share phải nhận track màn hình đang hoạt động.
+- Screen sharing gửi screen riêng và giữ camera, có âm thanh tab cùng micro nếu hỗ trợ.
+  Core phải ánh xạ đúng nguồn và thương lượng khi cần, không dùng replaceTrack để thay camera bằng screen.
+- Stop sharing của browser dừng nguồn share và trả quyền server, giữ trạng thái camera/mic.
+  Người mới nhận camera, screen và trạng thái share hiện tại.
 - maxBitrate là trần theo sender, đơn vị bit/giây; không phải cam kết chất lượng.
   Ví dụ 800 kbps × 4 peer ≈ 3,2 Mbps video upload mục tiêu, chưa tính audio/overhead.
   Dùng getStats đo chênh lệch bytesSent theo thời gian để kiểm chứng.

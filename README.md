@@ -25,7 +25,7 @@ Demo tắt âm thanh preview để tránh vọng; cần cuộc gọi thật đ�
 | Hàm giới hạn bitrate một video sender | Có code, chưa tích hợp cuộc gọi |
 | Socket.IO adapter | Có code theo protocol đề xuất, chưa có server để tích hợp |
 | SDP/ICE, perfect negotiation, peer lifecycle | Bộ khung TODO, gọi phương thức chưa làm sẽ báo lỗi |
-| Mesh nhiều người, replaceTrack toàn bộ peers | Bộ khung TODO |
+| Mesh nhiều người, gửi camera/screen riêng và audio tab | Bộ khung TODO; thiết kế mới ở UI-CONTRACT |
 | Chat, recording, giao diện phòng hoàn chỉnh | Thuộc thành viên 3 |
 | Server phòng họp, relay signaling, heartbeat | Thuộc thành viên 1 |
 
@@ -55,7 +55,15 @@ Demo tắt âm thanh preview để tránh vọng; cần cuộc gọi thật đ�
 
 Đọc PROJECT → SIGNALING → UI-CONTRACT → ROADMAP → TESTING.
 Sau demo media local, triển khai `PeerConnection` cho 2 người trước,
-rồi `MeshClient` cho 3-5 người; cuối cùng ghép screen sharing và bitrate.
+rồi `MeshClient` tăng dần 3, 5 đến mục tiêu 7 người; cuối cùng ghép screen sharing và bitrate.
+
+Người dùng đã thống nhất đề xuất signaling v0.3 trong `docs/SIGNALING.md`:
+tạo/join riêng, tối đa 7 người/phòng, mỗi tab một phòng và tham gia lại thủ công khi mất kết nối.
+Phát triển bằng localhost trước, sau mốc gọi hai người triển khai bản thử HTTPS trên cloud miễn phí.
+Backend chưa được triển khai; cần thành viên 1 thật xác nhận hợp đồng trước khi tích hợp.
+Hợp đồng UI v0.3 chọn React + Vite, bước chuẩn bị thiết bị và fallback chỉ nghe/xem,
+camera/screen riêng, audio tab và một người share/phòng. Xem `docs/UI-CONTRACT.md`.
+Cấu trúc src/core/ và các API/event bổ sung là mục tiêu; source hiện tại chưa triển khai chúng.
 
 Chưa có repository, server, hay protocol hiện tại của nhóm trong tài liệu đính kèm.
 Tên file, class và event ở đây là thiết kế đề xuất, không phải quy ước đã được nhóm duyệt.
